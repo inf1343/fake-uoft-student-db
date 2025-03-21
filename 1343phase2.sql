@@ -46,11 +46,10 @@ CREATE TABLE master(
 );
 
 CREATE TABLE phd(
-    program_name VARCHAR(50),
-    supervisor_id CHAR(10) NOT NULL,
-    PRIMARY KEY (program_name, supervisor_id),
-    FOREIGN KEY (program_name) REFERENCES program(program_name),
-    FOREIGN KEY (supervisor_id) REFERENCES teaching_staff(staff_id)
+    program_name VARCHAR(50) NOT NULL,
+    research_area VARCHAR(50) NOT NULL,
+    PRIMARY KEY (program_name, research_area),
+    FOREIGN KEY (program_name) REFERENCES program(program_name)
 );
 
 
@@ -90,13 +89,13 @@ CREATE TABLE admission (
 );
 
 
--- not done below
 CREATE TABLE supporting_document( -- weak entity
     application_id INT NOT NULL,
-    document_type ENUM('transcript','resume','cover_letter','reference_letter','other') NOT NULL,
+    document_name VARCHAR(50) NOT NULL,
+    -- document can be transcript, resume, cover letter, reference letter, or others
     file_path VARCHAR(500) NOT NULL, -- assume after upload, the file is stored in the school's server
     upload_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (application_id, document_type),
+    PRIMARY KEY (application_id, document_name),
     FOREIGN KEY (application_id) REFERENCES application(application_id) ON DELETE CASCADE
 );
 
@@ -205,6 +204,7 @@ CREATE TABLE student(
     -- should use update instead of creating a new entry
     
     student_number CHAR(10) PRIMARY KEY,
+    application_id INT NOT NULL, -- reference to application_id so that we can retrive the applicants' data
     first_name VARCHAR(50) NOT NULL,
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
@@ -215,6 +215,7 @@ CREATE TABLE student(
     is_full_time BOOLEAN NOT NULL,
     degree_type ENUM('bachelor','master','phd') NOT NULL,
     program_name VARCHAR(50) NOT NULL,
+    FOREIGN KEY (application_id) REFERENCES application(application_id),
     FOREIGN KEY (program_name) REFERENCES program(program_name)
 );
 -- CREATE TABLE alumni() -- optional; if we want to keep a copy of past students' data
@@ -238,9 +239,9 @@ CREATE TABLE master_student(
 CREATE TABLE phd_student(
     student_number CHAR(10) PRIMARY KEY,
     program_name VARCHAR(50) NOT NULL,
-    supervisor_id CHAR(10) NOT NULL,
+    research_area VARCHAR(50) NOT NULL,
     FOREIGN KEY (student_number) REFERENCES student(student_number),
-    FOREIGN KEY (program_name, supervisor_id) REFERENCES phd(program_name, supervisor_id)
+    FOREIGN KEY (program_name, research_area) REFERENCES phd(program_name, research_area)
 );
 
 
@@ -251,10 +252,11 @@ CREATE TABLE enrollment( -- junction table
     course_id INT NOT NULL,
     section_code INT NOT NULL,
     tutorial_code INT NULL, -- nullable
-    lab_code INT NULL, -- nullable
     PRIMARY KEY (student_number, course_id),
     FOREIGN KEY (student_number) REFERENCES student(student_number),
-    FOREIGN KEY (course_id) REFERENCES course(course_id)
+    -- FOREIGN KEY (course_id) REFERENCES course(course_id),
+    FOREIGN KEY (course_id, section_code) REFERENCES section(course_id, section_code),
+    FOREIGN KEY (course_id, tutorial_code) REFERENCES tutorial(course_id, tutorial_code)
 );
 
 
@@ -263,13 +265,13 @@ CREATE TABLE enrollment( -- junction table
 -- academic record: keep track of all courses a student has taken
 -- a student can only take a course that they have not taken before
 -- or they can retake a course if they have failed (grade = 'F')
-CREATE TABLE academic_record(
-    student_number CHAR(10) NOT NULL,
-    course_id INT NOT NULL,
-    course_code VARCHAR(10) NOT NULL,
-    section_code INT NOT NULL,
-    grade ENUM('A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F') NOT NULL,
-    PRIMARY KEY (student_number, course_id),
-    FOREIGN KEY (student_number) REFERENCES student(student_number),
-    FOREIGN KEY (course_id) REFERENCES course(course_id)
-);
+-- CREATE TABLE academic_record(
+--     student_number CHAR(10) NOT NULL,
+--     course_id INT NOT NULL,
+--     course_code VARCHAR(10) NOT NULL,
+--     section_code INT NOT NULL,
+--     grade ENUM('A+','A','A-','B+','B','B-','C+','C','C-','D+','D','D-','F') NOT NULL,
+--     PRIMARY KEY (student_number, course_id),
+--     FOREIGN KEY (student_number) REFERENCES student(student_number),
+--     FOREIGN KEY (course_id) REFERENCES course(course_id)
+-- );
