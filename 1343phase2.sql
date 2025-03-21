@@ -81,7 +81,7 @@ CREATE TABLE application(
 -- whenever an application has application_status = 'accepted', an admission is created here 
 -- an applicant can have multiple admissions, but only one is accepted.
 -- it should be a subtype of application, so it inherit the attribures of application 
-CREATE TABLE admission (
+CREATE TABLE admission_offer(
     application_id INT PRIMARY KEY,
     applicant_decision_deadline DATE NOT NULL,
     applicant_decision ENUM ('pending','accepted','declined') NOT NULL,
@@ -130,15 +130,17 @@ CREATE TABLE course(
     FOREIGN KEY (offered_by) REFERENCES faculty(faculty_name)
 );
 
-CREATE TABLE year_term_date(
-    year YEAR NOT NULL,
-    term ENUM('fall','winter','summer') NOT NULL,
-    start_date DATE,
-    end_date DATE,
-    enrollment_start_date DATE,
-    enrollment_end_date DATE,
-    PRIMARY KEY (year, term)
-);
+
+
+-- CREATE TABLE year_term_date(
+--     year YEAR NOT NULL,
+--     term ENUM('fall','winter','summer') NOT NULL,
+--     start_date DATE,
+--     end_date DATE,
+--     enrollment_start_date DATE,
+--     enrollment_end_date DATE,
+--     PRIMARY KEY (year, term)
+-- );
 
 
 -- prerequisite: not directly related to course (a separate entity)
@@ -147,12 +149,12 @@ CREATE TABLE year_term_date(
 -- flexibility (e.g., allowing placeholder prerequisites for future courses).
 -- can manually manage prerequisite courses outside the database constraints.
 -- don't need to deal with cascading deletes (e.g., a course deletion would require removing its prerequisite records).
-CREATE TABLE prerequisite( 
-    -- only server 
-    course_code VARCHAR(10) NOT NULL,
-    prerequisite_course_name VARCHAR(10) NOT NULL,
-    PRIMARY KEY (course_code, prerequisite_course_name)
-);
+-- CREATE TABLE prerequisite( 
+--     -- only server 
+--     course_code VARCHAR(10) NOT NULL,
+--     prerequisite_course_name VARCHAR(10) NOT NULL,
+--     PRIMARY KEY (course_code, prerequisite_course_name)
+-- );
 
 CREATE TABLE section( -- weak entity with composite key
     course_id INT NOT NULL, -- reference 
@@ -220,29 +222,29 @@ CREATE TABLE student(
 );
 -- CREATE TABLE alumni() -- optional; if we want to keep a copy of past students' data
 
-CREATE TABLE bachelor_student(
-    student_number CHAR(10) PRIMARY KEY,
-    program_name VARCHAR(50) NOT NULL,
-    specialization VARCHAR(50),
-    FOREIGN KEY (student_number) REFERENCES student(student_number),
-    FOREIGN KEY (program_name, specialization) REFERENCES bachelor(program_name, specialization)
-);
+-- CREATE TABLE bachelor_student(
+--     student_number CHAR(10) PRIMARY KEY,
+--     program_name VARCHAR(50) NOT NULL,
+--     specialization VARCHAR(50),
+--     FOREIGN KEY (student_number) REFERENCES student(student_number),
+--     FOREIGN KEY (program_name, specialization) REFERENCES bachelor(program_name, specialization)
+-- );
 
-CREATE TABLE master_student(
-    student_number CHAR(10) PRIMARY KEY,
-    program_name VARCHAR(50) NOT NULL,
-    master_type ENUM('course-based','thesis-based','project-based','MBA') NOT NULL,
-    FOREIGN KEY (student_number) REFERENCES student(student_number),
-    FOREIGN KEY (program_name) REFERENCES master(program_name)
-);
+-- CREATE TABLE master_student(
+--     student_number CHAR(10) PRIMARY KEY,
+--     program_name VARCHAR(50) NOT NULL,
+--     master_type ENUM('course-based','thesis-based','project-based','MBA') NOT NULL,
+--     FOREIGN KEY (student_number) REFERENCES student(student_number),
+--     FOREIGN KEY (program_name) REFERENCES master(program_name)
+-- );
 
-CREATE TABLE phd_student(
-    student_number CHAR(10) PRIMARY KEY,
-    program_name VARCHAR(50) NOT NULL,
-    research_area VARCHAR(50) NOT NULL,
-    FOREIGN KEY (student_number) REFERENCES student(student_number),
-    FOREIGN KEY (program_name, research_area) REFERENCES phd(program_name, research_area)
-);
+-- CREATE TABLE phd_student(
+--     student_number CHAR(10) PRIMARY KEY,
+--     program_name VARCHAR(50) NOT NULL,
+--     research_area VARCHAR(50) NOT NULL,
+--     FOREIGN KEY (student_number) REFERENCES student(student_number),
+--     FOREIGN KEY (program_name, research_area) REFERENCES phd(program_name, research_area)
+-- );
 
 
 
