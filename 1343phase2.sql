@@ -1,3 +1,5 @@
+CREATE DATABASE uoft_student_db;
+USE uoft_student_db; 
 CREATE TABLE faculty(
     faculty_name VARCHAR(50) PRIMARY KEY NOT NULL,
     administrator VARCHAR(50),
@@ -7,7 +9,7 @@ CREATE TABLE faculty(
 
 CREATE TABLE program(
     program_name VARCHAR(50) PRIMARY KEY NOT NULL, -- e.g. 'bachelor of information', 'master of science'
-    degree_type ENUM('bachelor','master','phd') NOT NULL, -- not in the ERD
+    degree_type ENUM('bachelor','master','phd') NOT NULL,
     credits_required INT NOT NULL, 
     offered_by VARCHAR(50) NOT NULL,
     FOREIGN KEY (offered_by) REFERENCES faculty(faculty_name)
@@ -21,8 +23,8 @@ CREATE TABLE teaching_staff(
     last_name VARCHAR(50) NOT NULL,
     email VARCHAR(100) UNIQUE NOT NULL,
     phone VARCHAR(20),
-    employment_type ENUM('full-time','part-time') NOT NULL, -- need edit
-    position ENUM('professor','lecturer','instructor','teaching_assistant') NOT NULL,
+    employment_type ENUM('full-time','part-time') NOT NULL, 
+    position ENUM('professor','teaching_assistant') NOT NULL,
     FOREIGN KEY (faculty_name) REFERENCES faculty(faculty_name)
 );
 
@@ -163,7 +165,7 @@ CREATE TABLE section( -- weak entity with composite key
         --     "Friday": ["14:00-15:30"]
         -- }
     capacity INT NOT NULL,
-    instructor_id INT NOT NULL, -- only include one main instructor here
+    instructor_id CHAR(10) NOT NULL, -- only include one main instructor here
     PRIMARY KEY (course_id, section_code),
     FOREIGN KEY (course_id) REFERENCES course(course_id),
     FOREIGN KEY (instructor_id) REFERENCES teaching_staff(staff_id)
@@ -174,22 +176,22 @@ CREATE TABLE tutorial( -- weak entity
     tutorial_code INT NOT NULL,
     schedule JSON NOT NULL,
     capacity INT NOT NULL,
-    instructor_id INT NOT NULL,
+    instructor_id CHAR(10) NOT NULL,
     PRIMARY KEY (course_id, tutorial_code),
     FOREIGN KEY (course_id) REFERENCES course(course_id),
     FOREIGN KEY (instructor_id) REFERENCES teaching_staff(staff_id)
 );
 
-CREATE TABLE lab( -- weak entity
-    course_id INT NOT NULL,
-    lab_code INT NOT NULL,
-    schedule JSON NOT NULL,
-    capacity INT NOT NULL,
-    instructor_id INT NOT NULL,
-    PRIMARY KEY (course_id, lab_code),
-    FOREIGN KEY (course_id) REFERENCES course(course_id),
-    FOREIGN KEY (instructor_id) REFERENCES teaching_staff(staff_id)
-);
+-- CREATE TABLE lab( -- weak entity
+--     course_id INT NOT NULL,
+--     lab_code INT NOT NULL,
+--     schedule JSON NOT NULL,
+--     capacity INT NOT NULL,
+--     instructor_id CHAR(10) NOT NULL,
+--     PRIMARY KEY (course_id, lab_code),
+--     FOREIGN KEY (course_id) REFERENCES course(course_id),
+--     FOREIGN KEY (instructor_id) REFERENCES teaching_staff(staff_id)
+-- );
 
 -- simplify: don't speacify the teaching team (e.g. TAs) for each section, tutorial, lab
 -- it's not that important for our database
