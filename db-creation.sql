@@ -249,6 +249,7 @@ CREATE TABLE student(
 
 
 -- check for constraint: student cannot take a course that they have already passed
+-- need to have checking for student enrolling same tutorial and same course
 CREATE TABLE enrollment( -- junction table
     student_number CHAR(10) NOT NULL,
     course_id INT NOT NULL,
