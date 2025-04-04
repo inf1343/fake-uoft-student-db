@@ -149,12 +149,11 @@ CREATE TABLE course(
 -- flexibility (e.g., allowing placeholder prerequisites for future courses).
 -- can manually manage prerequisite courses outside the database constraints.
 -- don't need to deal with cascading deletes (e.g., a course deletion would require removing its prerequisite records).
--- CREATE TABLE prerequisite( 
---     -- only server 
---     course_code VARCHAR(10) NOT NULL,
---     prerequisite_course_name VARCHAR(10) NOT NULL,
---     PRIMARY KEY (course_code, prerequisite_course_name)
--- );
+CREATE TABLE prerequisite( 
+     course_code VARCHAR(10) NOT NULL,
+     prerequisite_course_code VARCHAR(10) NOT NULL,
+     PRIMARY KEY (course_code, prerequisite_course_code)
+);
 
 CREATE TABLE section( -- weak entity with composite key
     course_id INT NOT NULL, -- reference 
