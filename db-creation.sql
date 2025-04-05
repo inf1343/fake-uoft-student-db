@@ -1,5 +1,6 @@
 CREATE DATABASE uoft_student_db;
 USE uoft_student_db; 
+
 CREATE TABLE faculty(
     faculty_name VARCHAR(50) PRIMARY KEY NOT NULL,
     administrator VARCHAR(50),
